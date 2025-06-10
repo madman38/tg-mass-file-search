@@ -2,8 +2,8 @@
 
 A Flask-based web app that allows users to search for documents (PDFs, etc.) in Telegram channels containing keywords using the Telegram API.
 
-[!CAUTION]
-This app has not been tested for a production environment and is designed for personal, local use.
+> [!CAUTION]
+> This app has not been tested for a production environment and is designed for personal, local use.
 
 ## Features
 
