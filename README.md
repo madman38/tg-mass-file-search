@@ -42,6 +42,7 @@ pip install -r requirements.txt
 API_ID=your_api_id
 API_HASH=your_api_hash
 SESSION_NAME=session_name
+PHONE_NUMBER=phone_number # example: +901234567890
 ```
 
 ## Setup Telegram Session
@@ -68,7 +69,7 @@ FLASK_PORT=5000
 FLASK_ENV=development
 ```
 
-## Important Note about Keywords
+## ⚠️ Important Note about Keywords
 The `CHANNEL_NAME_KEYWORDS` variable in the `.env` file sets keywords to filter channel names. Use commas to separate multiple keywords; without commas, it’s treated as a single phrase.
 ```py
 CHANNEL_NAME_KEYWORDS=kitap pdf
