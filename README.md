@@ -21,7 +21,7 @@ A Flask-based web app that allows users to search for documents (PDFs, etc.) in 
 
 1. Visit https://my.telegram.org/apps
 2. Create a new application
-3. Obtain API_ID and API_HASH
+3. Note down your API_ID and API_HASH
 
 ## Installation
 
@@ -36,12 +36,13 @@ cd tg-mass-file-search
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file with your Telegram credentials:
+3. Edit the `.env` file with your Telegram credentials:
 ```bash
-API_ID=your_telegram_api_id
-API_HASH=your_telegram_api_hash
-SESSION_NAME=session
-PHONE_NUMBER=your_phone_number
+# Telegram API configuration
+API_ID=your_api_id
+API_HASH=your_api_hash
+SESSION_NAME=session_name
+PHONE_NUMBER=phone_number # example: +901234567890
 ```
 
 ## Setup Telegram Session
@@ -57,11 +58,6 @@ Follow the prompts to complete Telegram authentication. This will create a sessi
 
 Environment variables in `.env`:
 ```bash
-# Telegram API configuration
-API_ID=your_api_id
-API_HASH=your_api_hash
-SESSION_NAME=session_name
-
 # Search configuration
 CHANNEL_NAME_KEYWORDS=kitap pdf
 CHANNEL_SEARCH_LIMIT_PER_KEYWORD=10
@@ -72,6 +68,18 @@ FLASK_HOST=0.0.0.0
 FLASK_PORT=5000
 FLASK_ENV=development
 ```
+
+## ⚠️ Important Note about Keywords
+The `CHANNEL_NAME_KEYWORDS` variable in the `.env` file sets keywords to filter channel names. Use commas to separate multiple keywords; without commas, it’s treated as a single phrase.
+```py
+CHANNEL_NAME_KEYWORDS=kitap pdf
+# This will be interpreted as a single keyword: ['kitap pdf']
+
+CHANNEL_NAME_KEYWORDS=kitap, pdf
+# This will be interpreted as two separate keywords: ['kitap', 'pdf']
+```
+
+Use commas to separate multiple keywords.
 
 ## Running the Application
 

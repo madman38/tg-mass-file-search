@@ -25,7 +25,7 @@ if not all([API_ID, API_HASH, SESSION_NAME]):
 API_ID = int(API_ID)
 
 # Search configuration
-CHANNEL_NAME_KEYWORDS = os.getenv("CHANNEL_NAME_KEYWORDS", "yks pdf,ayt tyt pdf,kitap pdf,soru bankası,soru pdf,soru kitabı,soru bankasi").split(",")
+CHANNEL_NAME_KEYWORDS = [i.strip() for i in os.getenv("CHANNEL_NAME_KEYWORDS").split(",")]
 CHANNEL_SEARCH_LIMIT_PER_KEYWORD = int(os.getenv("CHANNEL_SEARCH_LIMIT_PER_KEYWORD", "10"))
 MESSAGES_SEARCH_LIMIT_PER_CHANNEL = int(os.getenv("MESSAGES_SEARCH_LIMIT_PER_CHANNEL", "30"))
 
