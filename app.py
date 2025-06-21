@@ -53,7 +53,7 @@ async def ensure_client_ready(tg_client):
         try:
             await tg_client.connect()
             if not await tg_client.is_user_authorized():
-                logging.error("Telegram client not authorized after connect. Session may be invalid. Please run setup_session.py.")
+                logging.error("Telegram client not authorized after connect. Session may be invalid. Please run auth.py.")
                 raise ConnectionRefusedError("Telegram client not authorized. Session invalid or expired.")
             logging.info("Telethon client connected successfully.")
             if client_loop is None:
@@ -63,7 +63,7 @@ async def ensure_client_ready(tg_client):
             logging.error(f"Failed to connect to Telegram: {e}")
             raise
         except (UserDeactivatedBanError, AuthKeyUnregisteredError) as e:
-            logging.error(f"Telegram account issue: {e}. The account might be banned or session revoked. Re-run setup_session.py.")
+            logging.error(f"Telegram account issue: {e}. The account might be banned or session revoked. Re-run auth.py.")
             raise ConnectionRefusedError(f"Telegram account issue: {e}")
 
     if client_loop is None and tg_client.is_connected():
@@ -271,7 +271,7 @@ def search_files_route():
         logging.error(f"Client authorization/connection error: {e}")
         error_message = f"Telegram Connection Error: {e}. Ensure session is valid and network is okay."
     except SessionPasswordNeededError:
-        logging.error("2FA password needed. Re-run setup_session.py.")
+        logging.error("2FA password needed. Re-run auth.py.")
         error_message = "Telegram session requires 2FA password. Please re-authorize."
     except Exception as e:
         logging.error(f"Unexpected error during search: {e}", exc_info=True)
@@ -306,7 +306,7 @@ def download_file(chat_id, message_id):
         logging.error(f"Client authorization/connection error during download: {e}")
         return jsonify({"error": str(e), "suggestion": "Ensure Telethon session is valid."}), 503
     except SessionPasswordNeededError:
-        logging.error("2FA password needed for Telegram session during download. Re-run setup_session.py.")
+        logging.error("2FA password needed for Telegram session during download. Re-run auth.py.")
         return jsonify({"error": "Telegram session requires 2FA password. Re-authorize."}), 503
     except Exception as e:
         logging.error(f"An unexpected error occurred during download: {e}", exc_info=True)
@@ -323,13 +323,13 @@ async def startup_connect_telethon():
     try:
         await client.connect()
         if not await client.is_user_authorized():
-            logging.critical("Telethon client NOT AUTHORIZED on startup. Please run setup_session.py.")
+            logging.critical("Telethon client NOT AUTHORIZED on startup. Please run auth.py.")
         else:
             logging.info("Telethon client connected and authorized successfully on startup.")
             client_loop = client.loop 
             if client_loop is None: client_loop = asyncio.get_event_loop(); client.loop = client_loop; logging.warning("Client loop was None after connect, explicitly set.")
-    except SessionPasswordNeededError: logging.critical("Telegram session requires 2FA password. API cannot fully start. Please re-run setup_session.py.")
-    except (UserDeactivatedBanError, AuthKeyUnregisteredError) as e: logging.critical(f"Telegram account issue: {e}. Re-run setup_session.py.")
+    except SessionPasswordNeededError: logging.critical("Telegram session requires 2FA password. API cannot fully start. Please re-run auth.py.")
+    except (UserDeactivatedBanError, AuthKeyUnregisteredError) as e: logging.critical(f"Telegram account issue: {e}. Re-run auth.py.")
     except ConnectionRefusedError as e: logging.critical(f"Telegram client authorization/connection failed on startup: {e}. Ensure session is valid.")
     except Exception as e: logging.error(f"Failed to connect Telethon client on startup: {e}. API will attempt to connect on first request.", exc_info=False)
 
