@@ -81,3 +81,5 @@ Access the web interface at: `http://localhost:5000`
 1. Enter your search query in the web interface
 2. View matching documents from Telegram channels
 
+## License
+This project is licensed under the GPL v3 License. See the [LICENSE](LICENSE) file for details.
