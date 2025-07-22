@@ -1,0 +1,152 @@
+<style>
+    .search-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .error-container {
+        background: rgba(255, 76, 76, 0.1);
+        border: 1px solid rgba(255, 76, 76, 0.3);
+        border-radius: 12px;
+        padding: 16px 24px;
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        box-sizing: border-box;
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .error-icon {
+        background: rgba(255, 76, 76, 0.15);
+        color: #ff4c4c;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    
+    .error-message {
+        color: #ff4c4c;
+        margin: 0;
+        font-size: 1.05em;
+        line-height: 1.4;
+    }
+
+    .modern-searchbar {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: flex-end;
+        background: #23262f;
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0,178,255,0.10);
+        padding: 18px 24px;
+        margin-bottom: 24px;
+        border: 1px solid #2c2f3a;
+    }
+    .modern-searchbar .input-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 180px;
+        margin-bottom: 0;
+    }
+    .modern-searchbar label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #00b2ff;
+        font-size: 1.08em;
+        letter-spacing: 0.5px;
+    }
+    .modern-searchbar input[type="text"] {
+        padding: 12px 16px;
+        border: 1px solid #353945;
+        border-radius: 8px;
+        font-size: 1.08em;
+        background: #181a20;
+        outline: none;
+        color: #e3eaf0;
+        transition: border-color 0.2s, background 0.2s;
+        height: 48px;
+        box-sizing: border-box;
+    }
+    .modern-searchbar input[type="text"]:focus {
+        border-color: #00b2ff;
+        background-color: #23262f;
+    }
+    .modern-searchbar input[type="submit"] {
+        background: linear-gradient(90deg, #00b2ff 0%, #005f8e 100%);
+        color: #fff;
+        padding: 0 32px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.12em;
+        font-weight: 700;
+        box-shadow: 0 2px 8px rgba(0,178,255,0.10);
+        transition: background 0.2s, box-shadow 0.2s;
+        height: 48px;
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0;
+    }
+    @media (max-width: 600px) {
+        .modern-searchbar {
+            flex-direction: column;
+            gap: 10px;
+            padding: 12px 8px;
+        }
+        .modern-searchbar input[type="submit"] {
+            width: 100%;
+            height: 44px;
+        }
+    }
+</style>
+<div class="search-wrapper">
+    <form action="{{ url_for('search_files_route') }}" method="get" class="modern-searchbar">
+        <div class="input-group">
+            <label for="query">File search (eg 'matematik')</label>
+            <input type="text" id="query" name="q" required value="{% if error %}{{ query|default('') }}{% else %}{% endif %}" placeholder="Type file name or keyword...">
+        </div>
+        <div class="input-group">
+            <label for="keywords">Channel keywords (comma separated)</label>
+            <input type="text" id="keywords" name="keywords" required placeholder="kitap pdf, tyt pdf, ayt pdf" value="{% if error %}{{ keywords|default('') }}{% else %}{% endif %}">
+        </div>
+        <input type="submit" value="🔍 Search">
+    </form>
+    <div id="searching-indicator" style="display:none; margin-top:18px; text-align:center; color:#00b2ff; font-weight:600; font-size:1.12em;">
+        <span>🔎 Searching...</span>
+    </div>
+    {% if error %}
+        <div class="error-container">
+            <div class="error-icon">!</div>
+            <p class="error-message">{{ error }}</p>
+        </div>
+    {% endif %}
+</div>
+<script>
+document.querySelector('.modern-searchbar').addEventListener('submit', function() {
+    document.getElementById('searching-indicator').style.display = 'block';
+});
+</script>

@@ -15,6 +15,7 @@ from telethon.errors import BotMethodInvalidError, ChannelPrivateError, UserNotP
 load_dotenv()
 
 # Telegram API configuration
+
 API_ID = os.getenv("API_ID")
 API_HASH = os.getenv("API_HASH")
 SESSION_NAME = os.getenv("SESSION_NAME")
@@ -25,7 +26,6 @@ if not all([API_ID, API_HASH, SESSION_NAME]):
 API_ID = int(API_ID)
 
 # Search configuration
-CHANNEL_NAME_KEYWORDS = [i.strip() for i in os.getenv("CHANNEL_NAME_KEYWORDS").split(",")]
 CHANNEL_SEARCH_LIMIT_PER_KEYWORD = int(os.getenv("CHANNEL_SEARCH_LIMIT_PER_KEYWORD", "10"))
 MESSAGES_SEARCH_LIMIT_PER_CHANNEL = int(os.getenv("MESSAGES_SEARCH_LIMIT_PER_CHANNEL", "30"))
 
@@ -163,7 +163,6 @@ async def search_files_in_channels_async(tg_client, potential_channel_entities, 
                         "channel_id": entity.id, 
                         "message_id": message.id,
                         "date": message.date.isoformat() if message.date else "N/A",
-                        "download_url": url_for('download_file', chat_id=entity.id, message_id=message.id, _external=True),
                         "telegram_message_link": tg_link
                     }
                     found_files.append(file_info)
@@ -180,48 +179,7 @@ async def search_files_in_channels_async(tg_client, potential_channel_entities, 
             logging.error(f"Error searching messages in '{channel_title}' (ID: {entity.id}): {e}", exc_info=False)
     return found_files
 
-async def download_file_async(tg_client, chat_id, message_id, temp_download_dir):
-    # (This function remains the same as in the previous response where it was corrected)
-    await ensure_client_ready(tg_client)
-    try:
-        try:
-            chat_entity = await tg_client.get_entity(chat_id)
-        except ValueError as e:
-            logging.error(f"Could not get entity for chat_id {chat_id}: {e}")
-            return None, None
-        message = await tg_client.get_messages(chat_entity, ids=message_id)
-    except Exception as e:
-        logging.error(f"Error fetching message {message_id} from chat {chat_id}: {e}")
-        return None, None
 
-    if not message or not message.media or not isinstance(message.media, MessageMediaDocument):
-        logging.warning(f"Message {message_id} in chat {chat_id} is not a document or not found.")
-        return None, None
-
-    original_filename = "downloaded_file"
-    if hasattr(message.document, 'attributes'):
-        for attr in message.document.attributes:
-            if hasattr(attr, 'file_name') and attr.file_name:
-                original_filename = attr.file_name
-                break
-    safe_local_filename = "".join(c if c.isalnum() or c in ('.', '_', '-') else '_' for c in original_filename)
-    download_path = os.path.join(temp_download_dir, safe_local_filename)
-    logging.info(f"Attempting to download '{original_filename}' (msg_id:{message_id}) to '{download_path}'...")
-    try:
-        downloaded_file_path = await message.download_media(file=download_path)
-        if downloaded_file_path:
-            logging.info(f"Successfully downloaded to: {downloaded_file_path}")
-            return downloaded_file_path, original_filename
-        else:
-            logging.error(f"Download media returned None for message {message_id} in chat {chat_id}.")
-            return None, None
-    except FloodWaitError as e:
-        logging.warning(f"Flood wait during download of msg_id {message_id}: {e.seconds}s. Sleeping.")
-        await asyncio.sleep(e.seconds + 5)
-        return None, None
-    except Exception as e:
-        logging.error(f"Error downloading file (msg_id:{message_id}, chat_id:{chat_id}): {e}")
-        return None, None
 
 # --- Flask Routes ---
 @app.route('/', methods=['GET'])
@@ -231,10 +189,15 @@ def index():
 @app.route('/search', methods=['GET'])
 def search_files_route():
     query = request.args.get('q', '').strip()
+    keywords_raw = request.args.get('keywords', '').strip()
     if not query:
         return render_template('index.html', error="Please enter a search query.")
+    if not keywords_raw:
+        return render_template('index.html', error="Please enter channel keywords.")
 
-    logging.info(f"Received search request for query: '{query}'")
+    keywords_for_channel_names_fixed = [i.strip() for i in keywords_raw.split(',') if i.strip()]
+
+    logging.info(f"Received search request for query: '{query}' and keywords: {keywords_for_channel_names_fixed}")
     global client_loop
     if client_loop is None:
         try:
@@ -244,16 +207,14 @@ def search_files_route():
     
     if not client_loop or client_loop.is_closed():
         logging.error("Critical: Event loop for Telethon is not available.")
-        return render_template('results.html', query=query, error="Server error: Telethon client event loop issue.", results=[])
+        return render_template('index.html', error="Server error: Telethon client event loop issue.", keywords=keywords_raw)
 
     search_results_data = []
     error_message = None
     try:
         client_loop.run_until_complete(ensure_client_ready(client))
-        
-        # Use the user-provided function, passing CHANNEL_NAME_KEYWORDS
-        candidate_entities = client_loop.run_until_complete(search_relevant_channels_async(client, CHANNEL_NAME_KEYWORDS))
-        
+        # Use the user-provided function, passing keywords from the form
+        candidate_entities = client_loop.run_until_complete(search_relevant_channels_async(client, keywords_for_channel_names_fixed))
         if not candidate_entities:
             logging.info("No candidate entities found from global search.")
             error_message = "No relevant public channels/chats found matching criteria."
@@ -264,8 +225,10 @@ def search_files_route():
             else:
                 logging.info(f"No files found for query '{query}' in the identified entities.")
                 error_message = f"No files found for '{query}' in the searched channels/chats."
-        
-        return render_template('results.html', query=query, results=search_results_data, error=error_message)
+        if error_message:
+            return render_template('index.html', error=error_message)
+        # For results page, do not pass keywords or query back to the form
+        return render_template('results.html', query=query, results=search_results_data)
 
     except ConnectionRefusedError as e:
         logging.error(f"Client authorization/connection error: {e}")
@@ -277,44 +240,10 @@ def search_files_route():
         logging.error(f"Unexpected error during search: {e}", exc_info=True)
         error_message = f"An internal server error occurred: {str(e)}"
     
-    return render_template('results.html', query=query, results=[], error=error_message)
+    return render_template('index.html', error=error_message)
 
 
-@app.route('/download/<int:chat_id>/<int:message_id>', methods=['GET'])
-def download_file(chat_id, message_id):
-    # (This route remains the same as in the previous response)
-    logging.info(f"Received download request for message {message_id} from chat {chat_id}")
-    global client_loop
-    if client_loop is None or client_loop.is_closed():
-        logging.error("Critical: Event loop for Telethon is not available for download.")
-        return jsonify({"error": "Server error: Telethon client event loop issue."}), 500
 
-    temp_dir = tempfile.mkdtemp()
-    logging.info(f"Created temporary directory for download: {temp_dir}")
-    try:
-        client_loop.run_until_complete(ensure_client_ready(client))
-        filepath, original_filename = client_loop.run_until_complete(
-            download_file_async(client, chat_id, message_id, temp_dir)
-        )
-        if filepath and original_filename:
-            logging.info(f"Sending file: {filepath} as {original_filename}")
-            return send_file(filepath, download_name=original_filename, as_attachment=True)
-        else:
-            logging.error(f"File not found or download failed for msg_id:{message_id}, chat_id:{chat_id}")
-            return jsonify({"error": "File not found or download failed."}), 404
-    except ConnectionRefusedError as e:
-        logging.error(f"Client authorization/connection error during download: {e}")
-        return jsonify({"error": str(e), "suggestion": "Ensure Telethon session is valid."}), 503
-    except SessionPasswordNeededError:
-        logging.error("2FA password needed for Telegram session during download. Re-run auth.py.")
-        return jsonify({"error": "Telegram session requires 2FA password. Re-authorize."}), 503
-    except Exception as e:
-        logging.error(f"An unexpected error occurred during download: {e}", exc_info=True)
-        return jsonify({"error": "An internal server error occurred", "details": str(e)}), 500
-    finally:
-        try:
-            if os.path.exists(temp_dir): shutil.rmtree(temp_dir); logging.info(f"Cleaned up temp directory: {temp_dir}")
-        except Exception as e: logging.error(f"Error cleaning up temp directory {temp_dir}: {e}")
 
 # --- Main Execution & Startup/Shutdown (same as before) ---
 async def startup_connect_telethon():
