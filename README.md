@@ -9,7 +9,6 @@ A Flask-based web app that allows users to search for documents (PDFs, etc.) in 
 
 - Search for documents in public Telegram channels containing certain keywords
 - Download documents directly from Telegram via links
-- Download documents using server
 
 ## Prerequisites
 
@@ -59,7 +58,6 @@ Follow the prompts to complete Telegram authentication. This will create a sessi
 Environment variables in `.env`:
 ```bash
 # Search configuration
-CHANNEL_NAME_KEYWORDS=kitap pdf
 CHANNEL_SEARCH_LIMIT_PER_KEYWORD=10
 MESSAGES_SEARCH_LIMIT_PER_CHANNEL=30
 
@@ -68,18 +66,6 @@ FLASK_HOST=0.0.0.0
 FLASK_PORT=5000
 FLASK_ENV=development
 ```
-
-## ⚠️ Important Note about Keywords
-The `CHANNEL_NAME_KEYWORDS` variable in the `.env` file sets keywords to filter channel names. Use commas to separate multiple keywords; without commas, it’s treated as a single phrase.
-```py
-CHANNEL_NAME_KEYWORDS=kitap pdf
-# This will be interpreted as a single keyword: ['kitap pdf']
-
-CHANNEL_NAME_KEYWORDS=kitap, pdf
-# This will be interpreted as two separate keywords: ['kitap', 'pdf']
-```
-
-Use commas to separate multiple keywords.
 
 ## Running the Application
 
@@ -94,5 +80,6 @@ Access the web interface at: `http://localhost:5000`
 
 1. Enter your search query in the web interface
 2. View matching documents from Telegram channels
-3. Click either download link to retrieve files
 
+## License
+This project is licensed under the GPL v3 License. See the [LICENSE](LICENSE) file for details.

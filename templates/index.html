@@ -5,33 +5,222 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram File Search</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #0088cc; text-align: center; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; }
-        input[type="submit"] { background-color: #0088cc; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        input[type="submit"]:hover { background-color: #005f8e; }
-        .error { color: red; margin-bottom: 15px; }
-        .footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #777; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            background: #181a20;
+            color: #e3eaf0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #23262f;
+            padding: 32px 28px 24px 28px;
+            border-radius: 16px;
+            box-shadow: 0 0 24px rgba(0,0,0,0.45);
+        }
+        h1 {
+            color: #00b2ff;
+            font-size: 2.8em;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            margin-bottom: 32px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            text-shadow: 0 2px 15px rgba(0, 178, 255, 0.3);
+        }
+        .subtitle {
+            text-align: center;
+            color: #7ed6fa;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #00b2ff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05em;
+            transition: color 0.2s;
+        }
+        .result-item {
+            border: 1px solid #2c2f3a;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            background-color: #23262f;
+            box-shadow: 0 2px 12px rgba(0,178,255,0.07);
+            transition: box-shadow 0.2s;
+        }
+        .result-item h3 {
+            margin-top: 0;
+            color: #00b2ff;
+            font-size: 1.18em;
+            font-weight: 700;
+        }
+        .result-item p {
+            margin: 5px 0;
+            font-size: 0.98em;
+            color: #b2b8c6;
+        }
+        .result-item strong {
+            color: #e3eaf0;
+        }
+        .action-links a {
+            display: inline-block;
+            color: #fff;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 1em;
+            margin-right: 10px;
+            font-weight: 600;
+            box-shadow: 0 1px 6px rgba(0,178,255,0.10);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .download-link {
+            background: linear-gradient(90deg, #28a745 0%, #218838 100%);
+        }
+        .telegram-link {
+            background: linear-gradient(90deg, #00b2ff 0%, #005f8e 100%);
+        }
+        .error {
+            color: #ff4c4c;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .no-results {
+            color: #8a8fa6;
+            font-style: italic;
+        }
+        .searchbar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #23262f;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0,178,255,0.08);
+            padding: 22px 24px 16px 24px;
+            margin-bottom: 32px;
+            border: 1px solid #2c2f3a;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+        .searchbar-fields {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+        .searchbar-fields .input-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 260px;
+            min-width: 200px;
+            margin-bottom: 0;
+        }
+        .searchbar-fields label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #00b2ff;
+            font-size: 1em;
+            letter-spacing: 0.5px;
+        }
+        .searchbar-fields input[type="text"] {
+            padding: 10px 14px 10px 38px;
+            border: 1px solid #353945;
+            border-radius: 7px;
+            font-size: 1.08em;
+            background: #23262f url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/icons/search.svg') 10px 50% no-repeat;
+            outline: none;
+            color: #e3eaf0;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .searchbar-fields input[type="text"]:focus {
+            border-color: #00b2ff;
+            background-color: #181a20;
+        }
+        .searchbar-fields input#keywords {
+            background-image: url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/icons/tag.svg');
+        }
+        .searchbar-fields input#query {
+            background-image: url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/icons/search.svg');
+        }
+        .searchbar-fields input[type="submit"] {
+            background: linear-gradient(90deg, #00b2ff 0%, #005f8e 100%);
+            color: #fff;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 1.12em;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,178,255,0.10);
+            transition: background 0.2s, box-shadow 0.2s;
+            margin-top: 0;
+            align-self: stretch;
+            height: 52px;
+            letter-spacing: 0.5px;
+        }
+        .searchbar-fields input[type="submit"]:hover {
+            background: linear-gradient(90deg, #005f8e 0%, #00b2ff 100%);
+            box-shadow: 0 4px 16px rgba(0,178,255,0.18);
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px 4px 8px 4px;
+            }
+            .searchbar-fields {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .searchbar-fields .input-group {
+                min-width: 100%;
+            }
+            .searchbar-fields input[type="submit"] {
+                width: 100%;
+                height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>tg mass file search</h1>
-        
-        {% if error %}
-            <p class="error">{{ error }}</p>
+        {% if query %}
+            <a href="{{ url_for('index') }}" class="back-link">← new Search</a>
+            <h1>search Results for: "{{ query }}"</h1>
+        {% else %}
+            <h1>Telegram File Search</h1>
         {% endif %}
-
-        <form action="{{ url_for('search_files_route') }}" method="get">
-            <label for="query">search for a file (eg "matematik"):</label>
-            <input type="text" id="query" name="q" required>
-            <input type="submit" value="search">
-        </form>
-        <div class="footer">
-            <p>not: search time may vary depending on the amount of results found</p>
-        </div>
+        {% include 'searchbar.html' %}
+        {% if results %}
+            <p>Found {{ results|length }} file(s):</p>
+            {% for file in results %}
+                <div class="result-item">
+                    <h3>{{ file.filename }}</h3>
+                    <p><strong>channel:</strong> {{ file.channel_name }}</p>
+                    <p><strong>size:</strong> {{ file.file_size_readable }}</p>
+                    <p><strong>date:</strong> {{ file.date.split('T')[0].split('-')[2] ~ '/' ~ file.date.split('T')[0].split('-')[1] ~ '/' ~ file.date.split('T')[0].split('-')[0] if file.date and file.date != 'N/A' else 'N/A' }}</p>
+                    <div class="action-links">
+                        
+                        {% if file.telegram_message_link %}
+                            <a href="{{ file.telegram_message_link }}" class="telegram-link" target="_blank">go to message</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% elif not error and query %}
+            <p class="no-results">no files found matching your query in the relevant channels/chats.</p>
+        {% endif %}
+    </div>
+    <div style="text-align: center; margin-top: 30px; padding: 20px; color: #8f96a3; font-size: 14px;">
+        Made with ❤️ by <a href="https://github.com/madman38" style="color: #00b2ff; text-decoration: none;">madman38</a> &amp; <a href="https://github.com/sercan985" style="color: #00b2ff; text-decoration: none;">sercan985</a>
     </div>
 </body>
 </html>

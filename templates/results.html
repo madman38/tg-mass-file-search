@@ -3,54 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>search results for "{{ query }}"</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #0088cc; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #0088cc; text-decoration: none; }
-        .back-link:hover { text-decoration: underline; }
-        .result-item { border: 1px solid #eee; padding: 15px; margin-bottom: 15px; border-radius: 5px; background-color: #fdfdfd; }
-        .result-item h3 { margin-top: 0; color: #333; }
-        .result-item p { margin: 5px 0; font-size: 0.9em; }
-        .result-item strong { color: #555; }
-        .action-links a { display: inline-block; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; margin-top: 10px; font-size: 0.9em; margin-right: 10px; }
-        .download-link { background-color: #28a745; }
-        .download-link:hover { background-color: #218838; }
-        .telegram-link { background-color: #0088cc; }
-        .telegram-link:hover { background-color: #005f8e; }
-        .error { color: red; margin-bottom: 15px; font-weight: bold; }
-        .no-results { color: #777; font-style: italic; }
-    </style>
+    <title>search Results for "{{ query }}"</title>
 </head>
-<body>
-    <div class="container">
-        <a href="{{ url_for('index') }}" class="back-link">← new Search</a>
-        <h1>search Results for: "{{ query }}"</h1>
-
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-
+</head>
+<body style="background: linear-gradient(120deg, #181a20 0%, #23262f 100%); min-height: 100vh; margin: 0; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; color: #eaf6fb; letter-spacing: 0.01em;">
+    <div class="container" style="max-width: 850px; margin: 48px auto; background: linear-gradient(135deg, #23262f 60%, #181a20 100%); padding: 40px 32px 32px 32px; border-radius: 22px; box-shadow: 0 0 40px rgba(0,178,255,0.22); border: 1px solid #22242c; display: flex; flex-direction: column; align-items: stretch;">
+        <h1 style="color: #00b2ff; font-size: 2.8em; font-weight: 800; letter-spacing: 1.2px; margin-bottom: 32px; text-align: center; font-family: 'Inter', sans-serif; text-shadow: 0 2px 15px rgba(0, 178, 255, 0.3);">Telegram File Search</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <a href="{{ url_for('index') }}" class="back-link" style="color: #00b2ff; text-decoration: none; font-weight: 600; font-size: 1.08em; transition: color 0.2s; padding: 8px 18px; border-radius: 8px; background: rgba(0,178,255,0.08);">← new Search</a>
+            <h2 style="color: #00b2ff; font-size: 1.8em; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 0; text-shadow: 0 2px 12px #005f8e44; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">search Results for: "{{ query }}"</h2>
+        </div>
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 18px;">
+            {% include 'searchbar.html' %}
+        </div>
         {% if results %}
-            <p>Found {{ results|length }} file(s):</p>
+            <p style="color: #7ed6fa; font-size: 1.18em; font-weight: 700; margin-bottom: 22px;">Found {{ results|length }} file(s):</p>
+            <div style="display: flex; flex-direction: column; gap: 26px;">
             {% for file in results %}
-                <div class="result-item">
-                    <h3>{{ file.filename }}</h3>
-                    <p><strong>channel:</strong> {{ file.channel_name }}</p>
-                    <p><strong>size:</strong> {{ file.file_size_readable }}</p>
-                    <p><strong>date:</strong> {{ file.date.split('T')[0] if file.date and file.date != 'N/A' else 'N/A' }}</p>
-                    <div class="action-links">
-                        <a href="{{ url_for('download_file', chat_id=file.channel_id, message_id=file.message_id) }}" class="download-link" target="_blank">download via server (slow)</a>
+                <div class="result-item" style="border: 1.5px solid #2c2f3a; padding: 24px 32px; border-radius: 18px; background: linear-gradient(120deg, #23262f 80%, #181a20 100%); box-shadow: 0 4px 24px rgba(0,178,255,0.13); transition: box-shadow 0.2s; overflow-wrap: anywhere; word-break: break-all;">
+                    <h3 style="margin-top: 0; color: #00b2ff; font-size: 1.1em; font-weight: 700; margin-bottom: 12px; text-shadow: 0 1px 8px #005f8e22; overflow-wrap: anywhere; word-break: break-all; max-width: 100%; white-space: normal;">{{ file.filename }}</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 8px;">
+                        <span style="font-size: 1.07em; color: #b2b8c6;"><strong style="color: #7ed6fa;">channel:</strong> {{ file.channel_name }}</span>
+                        <span style="font-size: 1.07em; color: #b2b8c6;"><strong style="color: #7ed6fa;">size:</strong> {{ file.file_size_readable }}</span>
+                        <span style="font-size: 1.07em; color: #b2b8c6;"><strong style="color: #7ed6fa;">date:</strong> {{ file.date.split('T')[0].split('-')[2] ~ '/' ~ file.date.split('T')[0].split('-')[1] ~ '/' ~ file.date.split('T')[0].split('-')[0] if file.date and file.date != 'N/A' else 'N/A' }}</span>
+                    </div>
+                    <div class="action-links" style="margin-top: 20px; display: flex; gap: 14px;">
                         {% if file.telegram_message_link %}
-                            <a href="{{ file.telegram_message_link }}" class="telegram-link" target="_blank">go to message</a>
+                            <a href="{{ file.telegram_message_link }}" class="telegram-link" target="_blank" style="background: linear-gradient(90deg, #00b2ff 0%, #005f8e 100%); color: #fff; padding: 13px 26px; text-decoration: none; border-radius: 12px; font-size: 1.08em; font-weight: 700; box-shadow: 0 2px 12px rgba(0,178,255,0.14); transition: background 0.2s, box-shadow 0.2s;">go to message</a>
                         {% endif %}
                     </div>
                 </div>
             {% endfor %}
+            </div>
         {% elif not error %}
-            <p class="no-results">no files found matching your query in the relevant channels/chats.</p>
+            <div class="no-results" style="margin-top: 40px; text-align: center; background: rgba(0, 178, 255, 0.04); padding: 28px; border-radius: 16px; border: 1px solid rgba(0, 178, 255, 0.1);">
+                <div style="color: #00b2ff; font-size: 24px; margin-bottom: 12px;">🔍</div>
+                <p style="color: #8a8fa6; font-size: 1.15em; margin: 0; line-height: 1.5;">No files found matching your query in the relevant channels/chats.</p>
+                <p style="color: #7ed6fa; font-size: 0.95em; margin: 10px 0 0 0;">Try adjusting your search terms or channel keywords</p>
+            </div>
         {% endif %}
     </div>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        ::selection { background: #00b2ff33; }
+        .result-item h3 {
+            overflow-wrap: anywhere;
+            word-break: break-all;
+            max-width: 100%;
+            white-space: normal;
+        }
+        .container > div[style*='searchbar'] {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+    </style>
 </body>
 </html>
