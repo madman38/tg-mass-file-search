@@ -26,7 +26,7 @@ A Flask-based web app that allows users to search for documents (PDFs, etc.) in 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/madman38/tg-mass-file-search.git
+git clone https://github.com/sercan985/tg-mass-file-search.git
 cd tg-mass-file-search
 ```
 
