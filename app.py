@@ -1,7 +1,5 @@
 import asyncio
 import os
-import shutil
-import tempfile
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_file, url_for, render_template
