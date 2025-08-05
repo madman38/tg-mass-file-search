@@ -28,8 +28,11 @@
         </div>
         
         {% if results %}
+            <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 14px; padding: 20px 28px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(40, 167, 69, 0.15); text-align: center;">
+                <div style="color: #fff; font-size: 1.8em; font-weight: 800; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">✅ Results Found!</div>
+                <div style="color: rgba(255,255,255,0.9); font-size: 1.3em; font-weight: 600;">{{ results|length }} file(s) match your search</div>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 12px;">
-                <p style="color: #7ed6fa; font-size: 1.18em; font-weight: 700; margin: 0;">Found {{ results|length }} file(s):</p>
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <label for="sortBy" style="color: #00b2ff; font-weight: 600; font-size: 1em;">Sort by date:</label>
                     <select id="sortBy" style="background: #23262f; color: #e3eaf0; border: 1px solid #353945; border-radius: 8px; padding: 8px 12px; font-size: 1em; outline: none; cursor: pointer; transition: border-color 0.2s;">
@@ -135,9 +138,13 @@
                 }
             });
             
-            // Clear container and re-append sorted items
+            // Clear container and re-append sorted items with updated numbering
             container.innerHTML = '';
-            items.forEach(item => {
+            items.forEach((item, index) => {
+                const numberElement = item.querySelector('.result-number');
+                if (numberElement) {
+                    numberElement.textContent = index + 1;
+                }
                 container.appendChild(item);
             });
         });
