@@ -28,10 +28,19 @@
         </div>
         
         {% if results %}
-            <p style="color: #7ed6fa; font-size: 1.18em; font-weight: 700; margin-bottom: 22px;">Found {{ results|length }} file(s):</p>
-            <div style="display: flex; flex-direction: column; gap: 26px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 12px;">
+                <p style="color: #7ed6fa; font-size: 1.18em; font-weight: 700; margin: 0;">Found {{ results|length }} file(s):</p>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <label for="sortBy" style="color: #00b2ff; font-weight: 600; font-size: 1em;">Sort by date:</label>
+                    <select id="sortBy" style="background: #23262f; color: #e3eaf0; border: 1px solid #353945; border-radius: 8px; padding: 8px 12px; font-size: 1em; outline: none; cursor: pointer; transition: border-color 0.2s;">
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                    </select>
+                </div>
+            </div>
+            <div id="resultsContainer" style="display: flex; flex-direction: column; gap: 26px;">
             {% for file in results %}
-                <div class="result-item" style="border: 1.5px solid #2c2f3a; padding: 24px 32px; border-radius: 18px; background: linear-gradient(120deg, #23262f 80%, #181a20 100%); box-shadow: 0 4px 24px rgba(0,178,255,0.13); transition: box-shadow 0.2s; overflow-wrap: anywhere; word-break: break-all;">
+                <div class="result-item" data-date="{{ file.date }}" style="border: 1.5px solid #2c2f3a; padding: 24px 32px; border-radius: 18px; background: linear-gradient(120deg, #23262f 80%, #181a20 100%); box-shadow: 0 4px 24px rgba(0,178,255,0.13); transition: box-shadow 0.2s; overflow-wrap: anywhere; word-break: break-all;">
                     <h3 style="margin-top: 0; color: #00b2ff; font-size: 1.1em; font-weight: 700; margin-bottom: 12px; text-shadow: 0 1px 8px #005f8e22; overflow-wrap: anywhere; word-break: break-all; max-width: 100%; white-space: normal;">{{ file.filename }}</h3>
                     <div style="display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 8px;">
                         <span style="font-size: 1.07em; color: #b2b8c6;"><strong style="color: #7ed6fa;">channel:</strong> {{ file.channel_name }}</span>
@@ -92,7 +101,46 @@
                 font-size: 1em !important;
                 padding: 8px 16px !important;
             }
+            div[style*="justify-content: space-between"] {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 16px !important;
+            }
+        }
+        
+        #sortBy:focus {
+            border-color: #00b2ff !important;
+            background-color: #181a20 !important;
         }
     </style>
+    
+    <script>
+        document.getElementById('sortBy').addEventListener('change', function() {
+            const container = document.getElementById('resultsContainer');
+            const items = Array.from(container.querySelectorAll('.result-item'));
+            const sortBy = this.value;
+            
+            items.sort((a, b) => {
+                const dateA = a.getAttribute('data-date');
+                const dateB = b.getAttribute('data-date');
+                
+                // Handle N/A dates by treating them as very old dates
+                const dateAValue = dateA === 'N/A' || !dateA ? new Date('1900-01-01') : new Date(dateA);
+                const dateBValue = dateB === 'N/A' || !dateB ? new Date('1900-01-01') : new Date(dateB);
+                
+                if (sortBy === 'newest') {
+                    return dateBValue - dateAValue; // Newest first
+                } else {
+                    return dateAValue - dateBValue; // Oldest first
+                }
+            });
+            
+            // Clear container and re-append sorted items
+            container.innerHTML = '';
+            items.forEach(item => {
+                container.appendChild(item);
+            });
+        });
+    </script>
 </body>
 </html>
