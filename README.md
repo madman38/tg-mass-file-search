@@ -1,9 +1,11 @@
 # tg-mass-file-search
 
 A Flask-based web app that allows users to search for documents (PDFs, etc.) in Telegram channels containing keywords using the Telegram API.
-<br>![Demo](https://sercan985.github.io/assets/projects/tg-mass-file-search-demo-lq.png)
+
 > [!CAUTION]
 > This app has not been tested for a production environment and is designed for personal, local use.
+
+<br>![Demo](https://sercan985.github.io/assets/projects/tg-mass-file-search-demo-lq.png)
 
 ## Features
 
@@ -83,5 +85,6 @@ Access the web interface at: `http://localhost:5000`
 
 ## License
 This project is licensed under the GPL-3.0 license. See the [LICENSE](LICENSE) file for details.
+
 
 
