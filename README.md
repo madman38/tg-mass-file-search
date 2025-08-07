@@ -8,7 +8,7 @@ A Flask-based web app that allows users to search for documents (PDFs, etc.) in 
 ## Features
 
 - Search for documents in public Telegram channels containing certain keywords
-- Download documents directly from Telegram via links
+- View documents from Telegram
 
 ## Prerequisites
 
@@ -82,5 +82,5 @@ Access the web interface at: `http://localhost:5000`
 2. View matching documents from Telegram channels
 
 ## License
-This project is licensed under the GPL v3 License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL-3.0 license. See the [LICENSE](LICENSE) file for details.
 
