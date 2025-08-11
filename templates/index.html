@@ -61,6 +61,16 @@
             text-shadow: 0 2px 15px rgba(0, 178, 255, 0.3);
             padding-right: 50px;
         }
+        h1 a {
+            color: #00b2ff;
+            text-decoration: none;
+            transition: color 0.3s, text-shadow 0.3s, transform 0.3s !important;
+        }
+        h1 a:hover {
+            color: #7ed6fa !important;
+            text-shadow: 0 2px 20px rgba(126, 214, 250, 0.4) !important;
+            transform: scale(1.02);
+        }
         @media (max-width: 600px) {
             h1 {
                 padding-right: 40px;
@@ -237,9 +247,9 @@
 
         {% if query %}
             <a href="{{ url_for('index') }}" class="back-link">← new Search</a>
-            <h1>search Results for: "{{ query }}"</h1>
+            <h1><a href="{{ url_for('index') }}">search Results for: "{{ query }}"</a></h1>
         {% else %}
-            <h1>Telegram File Search</h1>
+            <h1><a href="{{ url_for('index') }}">Telegram File Search</a></h1>
         {% endif %}
         {% include 'searchbar.html' %}
         {% if results %}
