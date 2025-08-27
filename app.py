@@ -40,7 +40,9 @@ app.config['JSON_AS_ASCII'] = False
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- Telethon Client Setup ---
-client = TelegramClient(f"{os.getcwd()}/{SESSION_NAME}.session", API_ID, API_HASH, connection_retries=3, retry_delay=5)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SESSION_PATH = os.path.join(SCRIPT_DIR, f"{SESSION_NAME}.session")
+client = TelegramClient(SESSION_PATH, API_ID, API_HASH, connection_retries=3, retry_delay=5)
 client_loop = None
 
 # --- Helper Functions ---
