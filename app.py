@@ -9,6 +9,9 @@ from telethon.tl.types import InputMessagesFilterDocument, Channel, MessageMedia
 from telethon.errors.rpcerrorlist import FloodWaitError, SessionPasswordNeededError, UserDeactivatedBanError, AuthKeyUnregisteredError
 from telethon.errors import BotMethodInvalidError, ChannelPrivateError, UserNotParticipantError, ChatAdminRequiredError
 
+# --- Version Info ---
+app_version = "v1.3.1"
+
 # --- Configuration ---
 load_dotenv()
 
@@ -179,12 +182,10 @@ async def search_files_in_channels_async(tg_client, potential_channel_entities, 
             logging.error(f"Error searching messages in '{channel_title}' (ID: {entity.id}): {e}", exc_info=False)
     return found_files
 
-
-
 # --- Flask Routes ---
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    return render_template('index.html', version=app_version)
 
 @app.route('/search', methods=['GET'])
 def search_files_route():
@@ -225,10 +226,10 @@ def search_files_route():
             else:
                 logging.info(f"No files found for query '{query}' in the identified entities.")
                 error_message = f"No files found for '{query}' in the searched channels/chats."
-        if error_message:
-            return render_template('index.html', error=error_message)
+            if error_message:
+                return render_template('index.html', error=error_message, version=app_version)
         # For results page, do not pass keywords or query back to the form
-        return render_template('results.html', query=query, results=search_results_data)
+        return render_template('results.html', query=query, results=search_results_data, version=app_version)
 
     except ConnectionRefusedError as e:
         logging.error(f"Client authorization/connection error: {e}")
@@ -240,10 +241,7 @@ def search_files_route():
         logging.error(f"Unexpected error during search: {e}", exc_info=True)
         error_message = f"An internal server error occurred: {str(e)}"
     
-    return render_template('index.html', error=error_message)
-
-
-
+    return render_template('index.html', error=error_message, version=app_version)
 
 # --- Main Execution & Startup/Shutdown (same as before) ---
 async def startup_connect_telethon():
