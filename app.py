@@ -227,8 +227,9 @@ def search_files_route():
                 logging.info(f"No files found for query '{query}' in the identified entities.")
                 error_message = f"No files found for '{query}' in the searched channels/chats."
             if error_message:
-                return render_template('index.html', error=error_message, version=app_version)
-        # For results page, do not pass keywords or query back to the form
+                # Pass keywords to index.html so input is persistent
+                return render_template('index.html', error=error_message, version=app_version, keywords=keywords_raw)
+        # Always pass keywords to results.html
         return render_template('results.html', query=query, results=search_results_data, version=app_version, keywords=keywords_raw)
 
     except ConnectionRefusedError as e:
