@@ -10,7 +10,7 @@ from telethon.errors.rpcerrorlist import FloodWaitError, SessionPasswordNeededEr
 from telethon.errors import BotMethodInvalidError, ChannelPrivateError, UserNotParticipantError, ChatAdminRequiredError
 
 # --- Version Info ---
-app_version = "v1.4.1"
+app_version = "v1.4.0"
 
 # --- Configuration ---
 load_dotenv()
