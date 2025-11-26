@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>search Results for "{{ query }}"</title>
 </head>
-<body style="background: linear-gradient(120deg, #181a20 0%, #23262f 100%); min-height: 100vh; margin: 0; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; color: #eaf6fb; letter-spacing: 0.01em; overflow-x: hidden;">
+<body style="background: #181a20; min-height: 100vh; margin: 0; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; color: #eaf6fb; letter-spacing: 0.01em; overflow-x: hidden;">
     <div class="container" style="max-width: 850px; margin: 48px auto; background: #23262f; padding: 40px 32px 32px 32px; border-radius: 22px; border: 1px solid #22242c; display: flex; flex-direction: column; align-items: stretch; width: calc(100% - 64px); box-sizing: border-box; position: relative;">
         
         <!-- GitHub Logo -->
@@ -31,7 +31,7 @@
         </div>
         
         {% if results %}
-            <div style="background: #28a745; border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 14px; padding: 20px 28px; margin-bottom: 24px; text-align: center; word-wrap: break-word; overflow-wrap: break-word;">
+            <div style="background: #218838; border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 14px; padding: 20px 28px; margin-bottom: 24px; text-align: center; word-wrap: break-word; overflow-wrap: break-word;">
                 <div style="color: #fff; font-size: 1.8em; font-weight: 800; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">✅ Results Found!</div>
                 <div style="color: rgba(255,255,255,0.9); font-size: 1.3em; font-weight: 600;">{{ results|length }} file(s) match your search</div>
             </div>
@@ -55,7 +55,7 @@
                     </div>
                     <div class="action-links" style="margin-top: 20px; display: flex; gap: 14px; flex-wrap: wrap;">
                         {% if file.telegram_message_link %}
-                            <a href="{{ file.telegram_message_link }}" class="telegram-link" target="_blank" style="background: #00b2ff; color: #fff; padding: 13px 26px; text-decoration: none; border-radius: 12px; font-size: 1.08em; font-weight: 700; transition: background 0.2s; word-wrap: break-word; overflow-wrap: break-word; min-width: 0; flex-shrink: 0;">go to message</a>
+                            <a href="{{ file.telegram_message_link }}" class="telegram-link" target="_blank" style="background: #1976d2; color: #b2b8c6; padding: 13px 26px; text-decoration: none; border-radius: 12px; font-size: 1.08em; font-weight: 700; transition: background 0.2s; word-wrap: break-word; overflow-wrap: break-word; min-width: 0; flex-shrink: 0;">go to message</a>
                         {% endif %}
                     </div>
                 </div>
@@ -224,6 +224,8 @@
         .telegram-link {
             min-width: 0 !important;
             flex-shrink: 0 !important;
+            background: #1976d2 !important;
+            color: #eaf6fb !important;
         }
     </style>
     
