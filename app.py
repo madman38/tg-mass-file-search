@@ -10,7 +10,7 @@ from telethon.errors.rpcerrorlist import FloodWaitError, SessionPasswordNeededEr
 from telethon.errors import BotMethodInvalidError, ChannelPrivateError, UserNotParticipantError, ChatAdminRequiredError
 
 # --- Version Info ---
-app_version = "v1.3.1"
+app_version = "v1.4.0"
 
 # --- Configuration ---
 load_dotenv()
@@ -229,7 +229,7 @@ def search_files_route():
             if error_message:
                 return render_template('index.html', error=error_message, version=app_version)
         # For results page, do not pass keywords or query back to the form
-        return render_template('results.html', query=query, results=search_results_data, version=app_version)
+        return render_template('results.html', query=query, results=search_results_data, version=app_version, keywords=keywords_raw)
 
     except ConnectionRefusedError as e:
         logging.error(f"Client authorization/connection error: {e}")
